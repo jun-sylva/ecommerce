@@ -1,42 +1,74 @@
 import pandas as pd
-from sqlalchemy import create_engine
+import sqlite3
 
 # Connexion à SQLite
-DB_NAME = 'ecommerce.db'
-db_url = f'sqlite:///{DB_NAME}'
-engine = create_engine(db_url)
+def conn_sqlite(db_name):
+    try:
+        conn = sqlite3.connect(db_name)
+        print("Connected!!")
+        return conn
+    except Exception as e:
+        print(f"Error to connect on: {e}")
 
-# Chargement des fichiers JSON
+
 def load_json(file_path):
-    return pd.read_json(file_path, lines=True)
+    return pd.read_json(file_path)
 
-customers = load_json("./data/customers.json")
-orders = load_json("./data/orders.json")
-sales = load_json("./data/sales.json")
-products = load_json("./data/products.json")
+def data_cleaning(df):
+    # Drop duplicate values
+    df.drop_duplicates(inplace=True)
 
-# Nettoyage des données (exemple : suppression des doublons et valeurs nulles)
-customers.drop_duplicates(inplace=True)
-orders.drop_duplicates(inplace=True)
-sales.drop_duplicates(inplace=True)
-products.drop_duplicates(inplace=True)
+    # Drop row with blank values
+    df.dropna(inplace=True)
 
-customers.dropna(inplace=True)
-orders.dropna(inplace=True)
-sales.dropna(inplace=True)
-products.dropna(inplace=True)
+    # Normalizing column names
+    df.columns = df.columns.str.lower()
 
-# Normalisation des noms de colonnes
-customers.columns = customers.columns.str.lower()
-orders.columns = orders.columns.str.lower()
-sales.columns = sales.columns.str.lower()
-products.columns = products.columns.str.lower()
+    return df
 
-# Sauvegarde dans SQLite
+def save_on_sqlite(df, name, conn):
+    # Connexion on db or create if not exist
+    cursor = conn.cursor()
 
-# customers.to_sql("customers", engine, if_exists="replace", index=False)
-#orders.to_sql("orders", engine, if_exists="replace", index=False)
-#sales.to_sql("sales", engine, if_exists="replace", index=False)
-#products.to_sql("products", engine, if_exists="replace", index=False)
+    # Create Table
+    cursor.executescript('''
+        CREATE TABLE IF NOT EXISTS Customers (
+            customer_id TEXT PRIMARY KEY,
+            name TEXT NOT NULL,
+            email TEXT UNIQUE,
+            phone TEXT,
+            address TEXT
+        );
 
-print("Données chargées avec succès dans SQLite !")
+        CREATE TABLE IF NOT EXISTS Products (
+            product_id TEXT PRIMARY KEY,
+            product_name TEXT NOT NULL,
+            product_category TEXT NOT NULL,
+            price FLOAT NOT NULL,
+            vendor TEXT
+        );
+
+        CREATE TABLE IF NOT EXISTS Transactions (
+            transaction_id TEXT PRIMARY KEY,
+            customer_id TEXT,
+            shipping_method TEXT,
+            transaction_date TEXT NOT NULL,
+            FOREIGN KEY (customer_id) REFERENCES customers(customer_id)
+        );
+
+        CREATE TABLE IF NOT EXISTS sales (
+            sale_id INTEGER PRIMARY KEY,
+            transaction_id TEXT,
+            product_id TEXT,
+            quantity INTEGER NOT NULL,
+            total_amount FLOAT NOT NULL,
+            FOREIGN KEY (transaction_id) REFERENCES Transactions(transaction_id),
+            FOREIGN KEY (product_id) REFERENCES Products(product_id)
+        );
+    ''')
+
+    df.to_sql(name, conn, if_exists="replace", index=False)
+    print(f"{name} Data is loaded on Sqlite with success!!")
+
+
+

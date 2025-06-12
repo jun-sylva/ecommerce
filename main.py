@@ -1,8 +1,11 @@
 from data_ingestion import *
 import numpy as np
+import os
 
-path = "/Users/junior/Documents/github/ecommerce/transactions_fixed.json"
-db_name = 'ecommerce.db'
+# Use a path relative to this file to improve portability
+BASE_DIR = os.path.dirname(__file__)
+path = os.path.join(BASE_DIR, "transactions_fixed.json")
+db_name = os.path.join(BASE_DIR, 'ecommerce.db')
 
 if __name__ == "__main__":
     conn = conn_sqlite(db_name)

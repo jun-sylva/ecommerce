@@ -2,9 +2,11 @@ import sqlite3
 import pandas as pd
 import matplotlib.pyplot as plt
 import ace_tools_open as tools
+import os
 
-# Connexion à la base SQLite
-db_name = "ecommerce.db"
+# Connexion à la base SQLite avec un chemin relatif
+BASE_DIR = os.path.dirname(__file__)
+db_name = os.path.join(BASE_DIR, "ecommerce.db")
 conn = sqlite3.connect(db_name)
 
 # Récupération des données

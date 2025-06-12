@@ -1,7 +1,10 @@
 import json
+import os
 
-file_path = "/Users/junior/Documents/github/ecommerce/transactions.json"
-new_path = "/Users/junior/Documents/github/ecommerce/transactions_fixed.json"
+# Work with paths relative to this script
+BASE_DIR = os.path.dirname(__file__)
+file_path = os.path.join(BASE_DIR, "transactions.json")
+new_path = os.path.join(BASE_DIR, "transactions_fixed.json")
 
 with open(file_path, "r", encoding="utf-8") as f:
     data = json.load(f)

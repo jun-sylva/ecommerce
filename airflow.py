@@ -30,8 +30,12 @@ dag = DAG(
     schedule_interval=timedelta(days=1),
 )
 
-db_name = 'ecommerce.db'
-path = "/Users/junior/Documents/github/ecommerce/transactions_fixed.json"
+import os
+
+# Paths relative to this file for portability
+BASE_DIR = os.path.dirname(__file__)
+db_name = os.path.join(BASE_DIR, 'ecommerce.db')
+path = os.path.join(BASE_DIR, 'transactions_fixed.json')
 name_cust = "Customers"
 name_prd = "Products"
 name_sls = 'sales'

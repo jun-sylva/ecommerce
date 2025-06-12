@@ -3,8 +3,6 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import ace_tools_open as tools
 
-from fixed_json_file import transaction
-
 # Connexion à la base SQLite
 db_name = "ecommerce.db"
 conn = sqlite3.connect(db_name)

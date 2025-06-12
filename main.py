@@ -42,7 +42,7 @@ if __name__ == "__main__":
     sale_df = sale_df[['sale_id', 'transaction_id', 'product_id', 'quantity', 'total_amount']]
     sale_df = data_cleaning(sale_df, name_sls)
 
-    ## Load Products dataframe on Sqlite
+    ## Load Sales dataframe on Sqlite
     save_on_sqlite(sale_df, name_sls, conn)
 
     # Clean Transactions dataframe
